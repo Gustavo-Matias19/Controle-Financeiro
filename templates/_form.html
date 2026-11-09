@@ -1,0 +1,70 @@
+
+<input type="hidden" name="csrf" value="{{ csrf }}">
+
+<div class="form-grid">
+
+    <label>Descrição
+        <input
+            type="text"
+            name="descricao"
+            maxlength="150"
+            value="{{ registro.descricao if registro is defined else '' }}"
+            placeholder="Ex.: Mercado"
+            required
+        >
+    </label>
+
+    <label>Valor (R$)
+        <input
+            type="number"
+            name="valor"
+            min="0.01"
+            step="0.01"
+            value="{{ registro.valor if registro is defined else '' }}"
+            required
+        >
+    </label>
+
+    <label>Tipo
+        <select name="tipo" required>
+            <option value="despesa"
+                {% if registro is not defined or registro.tipo == 'despesa' %}
+                    selected
+                {% endif %}>
+                Despesa
+            </option>
+
+            <option value="receita"
+                {% if registro is defined and registro.tipo == 'receita' %}
+                    selected
+                {% endif %}>
+                Receita
+            </option>
+        </select>
+    </label>
+
+    <label>Categoria
+        <input
+            type="text"
+            name="categoria"
+            maxlength="60"
+            value="{{ registro.categoria if registro is defined else '' }}"
+            placeholder="Ex.: Alimentação"
+            required
+        >
+    </label>
+
+    <label>Data
+        <input
+            type="date"
+            name="data"
+            value="{{ registro.data.isoformat() if registro is defined else hoje }}"
+            required
+        >
+    </label>
+
+</div>
+
+<button class="btn">
+    {{ 'Salvar alterações' if registro is defined else 'Adicionar transação' }}
+</button>

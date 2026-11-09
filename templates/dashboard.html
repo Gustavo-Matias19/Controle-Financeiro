@@ -1,0 +1,225 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FinançasPY{% endblock %}
+
+{% block content %}
+
+<div class="heading">
+    <div>
+        <p class="eyebrow">VISÃO GERAL</p>
+
+        <h1>Olá, {{ usuario.nome }}!</h1>
+
+        <p class="muted">
+            Seu dinheiro, de forma organizada.
+        </p>
+    </div>
+
+    <span class="tag">Painel pessoal</span>
+</div>
+
+<!-- RESUMO FINANCEIRO -->
+
+<div class="metrics">
+
+    <article class="metric">
+        <span>Receitas totais</span>
+
+        <strong class="positive">
+            R$ {{ '%.2f'|format(resumo.receitas) }}
+        </strong>
+    </article>
+
+    <article class="metric">
+        <span>Despesas totais</span>
+
+        <strong class="negative">
+            R$ {{ '%.2f'|format(resumo.despesas) }}
+        </strong>
+    </article>
+
+    <article class="metric">
+        <span>Saldo acumulado</span>
+
+        <strong>
+            R$ {{ '%.2f'|format(resumo.saldo) }}
+        </strong>
+    </article>
+
+</div>
+
+<!-- FORMULÁRIO E GRÁFICO -->
+
+<div class="two-col">
+
+    <section class="card">
+
+        <h2>Nova transação</h2>
+
+        <p class="muted">
+            Registre uma entrada ou saída.
+        </p>
+
+        <form method="post"
+              action="/transacoes"
+              class="stack">
+
+            {% include "_form.html" %}
+
+        </form>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Gastos por categoria</h2>
+
+        <p class="muted">
+            Distribuição de suas despesas.
+        </p>
+
+        {% if grafico %}
+
+            <div class="bars">
+
+                {% for item in grafico %}
+
+                    <div class="bar-item">
+
+                        <div class="bar-title">
+                            <span>{{ item.categoria }}</span>
+
+                            <b>
+                                R$ {{ '%.2f'|format(item.valor) }}
+                            </b>
+                        </div>
+
+                        <div class="track">
+                            <div
+                                class="fill"
+                                data-percentual = "width: {{ item.percentual}} ">
+                            </div>
+                        </div>
+
+                        <small>
+                            {{ item.percentual }}% das despesas
+                        </small>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="empty">
+                Nenhuma despesa registrada.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+<!-- TABELA DE TRANSAÇÕES -->
+
+<section class="card table-card">
+
+    <div class="section-head">
+        <h2>Minhas transações</h2>
+
+        <span class="tag">
+            {{ registros|length }} registros
+        </span>
+    </div>
+
+    <div class="table-scroll">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for t in registros %}
+
+                    <tr>
+                        <td>{{ t.data.strftime('%d/%m/%Y') }}</td>
+
+                        <td>{{ t.descricao }}</td>
+
+                        <td>{{ t.categoria }}</td>
+
+                        <td>
+                            <span class="pill {{ t.tipo }}">
+                                {{ t.tipo|capitalize }}
+                            </span>
+                        </td>
+
+                        <td class="{{ 'positive' if t.tipo == 'receita' else 'negative' }}">
+                            R$ {{ '%.2f'|format(t.valor) }}
+                        </td>
+
+                        <td class="actions">
+
+                            <a href="/transacoes/{{ t.id }}/editar">
+                                Editar
+                            </a>
+
+                            <form
+                                method="post"
+                                action="/transacoes/{{ t.id }}/excluir"
+                                onsubmit="return confirm('Excluir esta transação?')">
+
+                                <input type="hidden"
+                                       name="csrf"
+                                       value="{{ csrf }}">
+
+                                <button class="delete">
+                                    Excluir
+                                </button>
+
+                            </form>
+
+                        </td>
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="6" class="empty">
+                            Nenhuma transação cadastrada.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+<script>
+    document.querySelectorAll(".fill").forEach(barra => {
+        const percentual = Number(barra.dataset.percentual);
+
+        barra.style.width = `${Math.max(0, Math.min(100, percentual))}%`;
+    });
+</script>
+
+{% endblock %}
