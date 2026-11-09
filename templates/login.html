@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Login - Controle Financeiro
+{% endblock %}
+
+{% block content %}
+
+<section class="auth card">
+
+    <h1>Entrar na conta</h1>
+
+    <p class="muted">
+        Acompanhe suas receitas e despesas.
+    </p>
+
+    {% if erro %}
+        <p class="error">{{ erro }}</p>
+    {% endif %}
+
+    <form method="post" action="/login" class="stack">
+
+        <input
+            type="hidden"
+            name="csrf"
+            value="{{ csrf }}"
+        >
+
+        <label>
+            E-mail
+            <input
+                type="email"
+                name="email"
+                placeholder="Digite seu e-mail"
+                required
+            >
+        </label>
+
+        <label>
+            Senha
+            <input
+                type="password"
+                name="senha"
+                placeholder="Digite sua senha"
+                required
+            >
+        </label>
+
+        <button type="submit" class="btn">
+            Entrar
+        </button>
+
+    </form>
+
+    <p class="muted bottom">
+        Não possui conta?
+        <a href="/cadastro">Cadastre-se</a>
+    </p>
+
+</section>
+
+{% endblock %}

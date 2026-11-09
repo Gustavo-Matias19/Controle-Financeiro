@@ -1,0 +1,27 @@
+
+{% extends "base.html" %}
+
+{% block title %}Editar transação{% endblock %}
+
+{% block content %}
+
+<section class="auth card wide">
+
+    <a href="/dashboard" class="back">
+        Voltar ao dashboard
+    </a>
+
+    <h1>Editar transação #{{ registro.id }}</h1>
+
+    <form
+        method="post"
+        action="/transacoes/{{ registro.id }}/editar"
+        class="stack">
+
+        {% include "_form.html" %}
+
+    </form>
+
+</section>
+
+{% endblock %}
